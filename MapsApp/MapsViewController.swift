@@ -12,7 +12,7 @@ import CoreData
 
 
 class MapsViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate {
-
+    
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var nameTF: UITextField!
     @IBOutlet weak var noteTF: UITextField!
@@ -23,6 +23,11 @@ class MapsViewController: UIViewController, MKMapViewDelegate, CLLocationManager
     
     var selectedName = ""
     var selectedId : UUID?
+    
+    var annotationTitle = ""
+    var annotationSubtitle = ""
+    var annotationLatitude = Double()
+    var annotationLongitude = Double()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,7 +45,55 @@ class MapsViewController: UIViewController, MKMapViewDelegate, CLLocationManager
         if selectedName != "" {
             // Get data from CoreData
             if let uuidString = selectedId?.uuidString {
-                print(uuidString)
+                let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                let context = appDelegate.persistentContainer.viewContext
+                
+                let fetchRequest =  NSFetchRequest<NSFetchRequestResult>(entityName: "Place")
+                fetchRequest.predicate = NSPredicate(format: "id = %@", uuidString)
+                fetchRequest.returnsObjectsAsFaults = false
+                
+                do {
+                    
+                    let results = try context.fetch(fetchRequest)
+                    
+                    if results.count > 0 {
+                        
+                        for result in results as! [NSManagedObject] {
+                            
+                            if let name = result.value(forKey: "name") as? String {
+                                annotationTitle = name
+                                
+                                if let note = result.value(forKey: "note") as? String {
+                                    annotationSubtitle = note
+                                    
+                                    if let latitude = result.value(forKey: "latitude") as? Double {
+                                        annotationLatitude = latitude
+                                        
+                                        if let longitude = result.value(forKey: "longitude") as? Double {
+                                            annotationLongitude = longitude
+                                            
+                                            let annotation = MKPointAnnotation()
+                                            annotation.title = annotationTitle
+                                            annotation.subtitle = annotationSubtitle
+                                            let coordinate = CLLocationCoordinate2D(latitude: annotationLatitude, longitude: annotationLongitude)
+                                            annotation.coordinate = coordinate
+                                            
+                                            mapView.addAnnotation(annotation)
+                                            nameTF.text =  annotationTitle
+                                            noteTF.text = annotationSubtitle
+                                        }
+                                    }
+                                }
+                                
+                            }
+                        }
+                    }
+                    
+                    
+                } catch {
+                    print("Error")
+                }
+                
             }
             
         } else {
@@ -97,7 +150,7 @@ class MapsViewController: UIViewController, MKMapViewDelegate, CLLocationManager
         }
     }
     
-
-
+    
+    
 }
 
