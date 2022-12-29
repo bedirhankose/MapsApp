@@ -14,7 +14,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
 
     @IBOutlet weak var mapView: MKMapView!
     var locationManager = CLLocationManager()
-    
+    @IBOutlet weak var nameTF: UITextField!
+    @IBOutlet weak var noteTF: UITextField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,7 +38,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
             
             let annotation = MKPointAnnotation()
             annotation.coordinate = touchedCoordinate
-            annotation.title = "Sample Subtitle"
+            annotation.title = nameTF.text
+            annotation.subtitle = noteTF.text
             mapView.addAnnotation(annotation)
             
         }
