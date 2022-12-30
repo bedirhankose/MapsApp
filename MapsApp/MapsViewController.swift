@@ -131,6 +131,26 @@ class MapsViewController: UIViewController, MKMapViewDelegate, CLLocationManager
         return pinView
     }
     
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        if selectedName != "" {
+            let requestLocation = CLLocation(latitude: annotationLatitude, longitude: annotationLongitude)
+            
+            CLGeocoder().reverseGeocodeLocation(requestLocation) { placemarkArray, error in
+                if let placemarks = placemarkArray {
+                    if placemarks.count > 0 {
+                        let newPlacemark = MKPlacemark(placemark: placemarks[0])
+                        let item = MKMapItem(placemark: newPlacemark)
+                        item.name = self.annotationTitle
+                        
+                        let launchOptions = [MKLaunchOptionsDirectionsModeKey : MKLaunchOptionsDirectionsModeKey]
+                        
+                        item.openInMaps(launchOptions: launchOptions)
+                    }
+                }
+            }
+        }
+    }
+    
     @objc func selectLocation(gestureRecognizer : UILongPressGestureRecognizer) {
         if gestureRecognizer.state == .began {
             let touchedPoint = gestureRecognizer.location(in: mapView)
