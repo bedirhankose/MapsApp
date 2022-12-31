@@ -9,7 +9,7 @@ import UIKit
 import CoreData
 
 class ListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-
+    
     @IBOutlet weak var tableView: UITableView!
     var nameArray = [String]()
     var idArray = [UUID]()
@@ -18,8 +18,6 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
         
         tableView.delegate = self
         tableView.dataSource = self
@@ -92,5 +90,5 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
             destinationVC.selectedId = selectedPlaceId
         }
     }
-
+    
 }
